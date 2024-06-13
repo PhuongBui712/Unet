@@ -39,7 +39,9 @@ class UpSample(nn.Module):
 
     def forward(self, x, skipped_x):
         x = self.up_conv_op(x)
+        print(f"Before concat: x - {x.shape}, skipped x - {skipped_x.shape}")
         x = torch.cat([x, skipped_x], dim=1) # dim = 1 is channels dims of input (dim = 0 is batch size)
+        print(f"After concat: x - {x.shape}, skipped x - {skipped_x.shape}")
         x = self.conv_op(x)
 
         return x
