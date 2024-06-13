@@ -14,7 +14,7 @@ class CarvanaDataset(Dataset):
             pass
         else:
             data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), path))
-            self.images = [data_dir + '/train/' + file for file in os.listdir(data_dir + '/train_hq/')]
+            self.images = [data_dir + '/train_hq/' + file for file in os.listdir(data_dir + '/train_hq/')]
             self.masks = [data_dir + '/train_masks/' + file for file in os.listdir(data_dir + '/train_masks/')]
 
         self.transformer = transforms.Compose([
