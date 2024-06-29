@@ -1,6 +1,22 @@
 import torch
+from torch.optim import Optimizer
+
 import numpy as np
 from scipy.ndimage import distance_transform_edt
+
+        
+def get_lr(optimier: Optimizer):
+    """
+    Get the current learning rate from the optimizer.
+    
+    Args:
+        optimizer (torch.optim.Optimizer): The optimizer used in training.
+    
+    Returns:
+        float: The current learning rate.
+    """
+    for param_group in optimier.param_groups:
+        return param_group['lr']
 
 
 def compute_weight_map(labels, w0=10, sigma=5):
@@ -25,8 +41,3 @@ def compute_weight_map(labels, w0=10, sigma=5):
     weight_map = wc + w0 * np.exp(- (d1 + d2) ** 2 / (2 * sigma ** 2))
     
     return torch.tensor(weight_map, dtype=torch.float32)
-
-# Assuming you have your ground truth labels as a tensor
-labels = torch.tensor(...)  # Shape: (batch_size, height, width)
-
-weight_map = compute_weight_map(labels)
