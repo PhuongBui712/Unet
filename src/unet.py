@@ -5,15 +5,14 @@ from unet_parts import DoubleConv, DownSample, UpSample, CropAndConcat
 
 
 class Unet(nn.Module):
-    # TODO: Customize the conv blocks for easy-scalable
+    # TODO: upgrade Unet model, the basic Unet doesn't work well (just 7x% accuracy on evalation)
     def __init__(self,
                  in_channels: int,
                  output_classes: int,
                  down_conv_kwargs: dict = None,
                  down_sample_kwargs: dict = None,
                  up_conv_kwargs: dict = None,
-                 up_sample_kwargs: dict = None,
-                 expansive_kwargs: dict = None):
+                 up_sample_kwargs: dict = None):
         super().__init__()
 
         self.down_conv = nn.ModuleList([
