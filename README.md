@@ -34,7 +34,7 @@ To get started, follow these following simple steps:
 
 **1. Clone this project**
 ```bash
-https://github.com/uvipen/Hierarchical-attention-networks-pytorch.git
+git clone https://github.com/uvipen/Hierarchical-attention-networks-pytorch.git
 ```
 
 **2. Setup Python environment**
