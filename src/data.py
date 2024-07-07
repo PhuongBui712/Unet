@@ -1,8 +1,13 @@
 import os
 from PIL import Image
 
+import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
+
+
+MEAN = [0.485, 0.456, 0.406]
+STD = [0.229, 0.224, 0.225]
 
 
 class CarvanaDataset(Dataset):
@@ -34,25 +39,33 @@ class CarvanaDataset(Dataset):
 
 class BCSSDataset(Dataset):
     SIZE=(224, 224)
-    def __init__(self, path: str, split: Literal['train', 'val', 'test'] = 'train'):
-        path = os.path.abspath(path)
-        image_path = os.path.join(path, split)
-        self.images = [os.path.join(image_path, filename) for filename in os.listdir(image_path)]
-        mask_path = os.path.join(path, f'{split}_mask')
-        self.masks = [os.path.join(mask_path, filename) for filename in os.listdir(mask_path)]
-
-        self.transformer = transforms.Compose([
-            transforms.Resize(self.SIZE),
-            transforms.ToTensor()
+    _img_transformer = transforms.Compose([
+            transforms.Resize(SIZE),
+            transforms.PILToTensor(),
+            transforms.ConvertImageDtype(torch.float),
+            transforms.Normalize(mean=MEAN, std=STD),
         ])
-
-        # TODO: handle test set
+    _mask_transformer = transforms.Compose([
+            transforms.Resize(SIZE),
+            transforms.PILToTensor(),
+        ])
+    
+    def __init__(self, image_path: str, mask_path: str):
+        image_path = os.path.abspath(image_path)
+        mask_path = os.path.abspath(mask_path)
+        
+        self.images = [os.path.join(image_path, filename) for filename in os.listdir(image_path)]
+        self.masks = [os.path.join(mask_path, filename) for filename in os.listdir(mask_path)]
 
     def __len__(self):
         return len(self.images)
     
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int):
         image = Image.open(self.images[idx])
-        mask = Image.open(self.masks[idx]).convert('L')
+        image = self._img_transformer(image)
 
-        return self.transformer(image), self.transformer(mask)
+        mask = Image.open(self.masks[idx])
+        mask = self._mask_transformer(mask)
+        mask = torch.squeeze(mask, 0).long()
+
+        return image, mask
